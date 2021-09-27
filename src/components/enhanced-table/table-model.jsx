@@ -14,6 +14,14 @@ const headCells = [
   {
     id: 'tableId',
     label: 'TABLE NUMBER',
+  },
+  {
+    id: 'startTime',
+    label: 'Start Time',
+  },
+  {
+    id: 'endTime',
+    label: 'End Time',
   }
 ];
 

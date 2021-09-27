@@ -13,9 +13,10 @@ import EnhancedTableHead from './table-head/table-head';
 import { getComparator, stableSort } from './helpers/sorts';
 import EnhancedTableToolbar from './enhanced-table-toolbar/enhanced-table-toolbar';
 import { MenuItem, TextField, Typography } from '@mui/material';
+import { TimePicker } from '@mui/lab';
 
 export default function EnhancedTable() {
-  const { ordersQueue: rows = [], tables = [], updateTableStatus } = useContext(RestaurantContext);
+  const { ordersQueue: rows = [], tables = [], updateTableStatus, updateOrder } = useContext(RestaurantContext);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('id');
   const [selected, setSelected] = useState([]);
@@ -30,6 +31,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
+      console.log(event.target.checked);
       const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
@@ -40,29 +42,41 @@ export default function EnhancedTable() {
   const handleClick = (event, id) => {
     event.preventDefault();
     event.stopPropagation();
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+    if (event.target.type === 'checkbox') {
+      console.log(event.target);
+
+      const selectedIndex = selected.indexOf(id);
+      let newSelected = [];
+
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, id);
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1));
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1));
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      }
+
+      setSelected(newSelected);
     }
-
-    setSelected(newSelected);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_event, newPage) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const setTimeChange = (rowId, value, field) => {
+    updateOrder({
+      id: Number(rowId),
+      [field]: value,
+    });
   };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
@@ -91,6 +105,7 @@ export default function EnhancedTable() {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   const tableId = tables.find((t) => t.orderId === row.id)?.id;
+                  const { startTime = null, endTime = null } = row;
                   return (
                     <TableRow
                       hover
@@ -123,7 +138,6 @@ export default function EnhancedTable() {
                             sx={{ padding: '0', width: '100%' }}
                             id='outlined-select-table'
                             select
-                            label='Table ID'
                             value={-1}
                             onChange={(e) => {
                               e.stopPropagation();
@@ -133,7 +147,7 @@ export default function EnhancedTable() {
                             size='small'
                           >
                             {tables
-                              .filter((t) => !t.orderId && t.size === row.diners)
+                              .filter((t) => t.orderId === false && t.size === row.diners)
                               .map((t) => (
                                 <MenuItem key={t.id} value={t.id}>
                                   <Typography sx={{ fontSize: '1.6vh' }}>
@@ -144,6 +158,20 @@ export default function EnhancedTable() {
                           </TextField>
                         </TableCell>
                       )}
+                      <TableCell>
+                        <TimePicker
+                          value={startTime}
+                          onChange={(value) => setTimeChange(row.id, value, 'startTime')}
+                          renderInput={(params) => <TextField size='small' {...params} />}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TimePicker
+                          value={endTime}
+                          onChange={(value) => setTimeChange(row.id, value, 'endTime')}
+                          renderInput={(params) => <TextField size='small' {...params} />}
+                        />
+                      </TableCell>
                     </TableRow>
                   );
                 })}

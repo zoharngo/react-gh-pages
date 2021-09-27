@@ -8,6 +8,10 @@ import EnhancedTable from './components/enhanced-table/enhanced-table';
 import RestaurantGrid from './components/restaurant-grid/restaurant-grid';
 import RestaurantProvider from './store/restaurant-provider';
 import Leadgen from './components/leadgen/leadgen';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+
+
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -38,30 +42,23 @@ function App() {
           component='div'
           sx={{
             bgcolor: 'background.default',
-            flexDirection: 'row',
+            flexDirection: 'column',
             display: 'flex',
             padding: '50px',
             boxSizing: 'border-box',
           }}
         >
-          <Box component='div' sx={{ flex: 4, boxSizing: 'border-box', height: 'fit-content' }}>
+          <Box component='div' sx={{ boxSizing: 'border-box', height: 'fit-content' }}>
             <EnhancedTable />
           </Box>
-          <Paper
-            elevation={3}
-            component='div'
-            sx={{
-              padding: '10px',
-              flex: 3,
-              boxSizing: 'border-box',
-              marginRight: '5vw',
-              marginLeft: '5vw',
-            }}
-          >
+
+          <Box mb={2} component='div' sx={{ boxSizing: 'border-box', height: 'fit-content' }}>
+            <Paper>
+              <Leadgen />
+            </Paper>
+          </Box>
+          <Paper elevation={10}>
             <RestaurantGrid numberOfTables={17} />
-          </Paper>
-          <Paper elevation={3} component='div' sx={{ flex: 2, boxSizing: 'border-box', height: 'fit-content' }}>
-            <Leadgen />
           </Paper>
         </Box>
       </Box>
@@ -93,7 +90,9 @@ function AppContextWrapper() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <App />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <App />
+        </LocalizationProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

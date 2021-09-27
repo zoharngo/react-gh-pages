@@ -7,7 +7,6 @@ const Leadgen = () => {
   const { tables = [] } = useContext(RestaurantContext);
   const availableTables = useMemo(() => tables.filter((t) => t.orderId === false).length, [tables]);
   const takenTables = useMemo(() => tables.length - availableTables, [availableTables, tables]);
-  console.log('availableTables', availableTables);
   return (
     <Box padding={0} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} component='div'>
       <Box m={1}>

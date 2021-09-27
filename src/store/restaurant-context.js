@@ -4,8 +4,8 @@ const RestaurantContext = React.createContext({
   ordersQueue: [],
   tables: [],
   updateTableStatus: () => {},
-  deleteOrder: (id) => {},
-  updateOrder: (order) => {},
+  deleteOrder: () => {},
+  updateOrder: () => {},
 });
 
 export default RestaurantContext;
